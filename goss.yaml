@@ -1,0 +1,5 @@
+command:
+  phpcs --version:
+    exit-status: 0
+    stdout:
+      - PHP_CodeSniffer

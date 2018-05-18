@@ -1,0 +1,19 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+  - docker build --iidfile iid .
+  - docker run -v $(pwd)/goss.yaml:/goss.yaml $(cat iid) sh -c 'curl -fsSL https://goss.rocks/install | sh; goss validate'
+
+after_success:
+  - LATEST_VERSION=$(docker run oxeva/phpcs:latest phpcs --version | awk '{print $3}')
+  - PHPCS_VERSION=$(docker run $(cat iid) phpcs --version | awk '{print $3}')
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - docker tag $(cat iid) oxeva/phpcs:$PHPCS_VERSION
+  - docker tag $(cat iid) oxeva/phpcs:$(echo $PHPCS_VERSION | cut -d. -f 1,2)
+  - if [ "$(echo -e "$LATEST_VERSION\n$PHPCS_VERSION" | sort -V | head -n1)" == "$LATEST_VERSION" ]; then
+    docker tag $(cat iid) oxeva/phpcs:latest
+    fi
+  - docker push oxeva/phpcs
