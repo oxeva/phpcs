@@ -14,6 +14,6 @@ after_success:
   - docker tag $(cat iid) oxeva/phpcs:$CURRENT_VERSION
   - docker tag $(cat iid) oxeva/phpcs:$(echo $CURRENT_VERSION | cut -d. -f 1,2)
   - if [ "$(echo -e "$LATEST_VERSION\n$CURRENT_VERSION" | sort -V | head -n1)" == "$LATEST_VERSION" ]; then
-    docker tag $(cat iid) oxeva/phpcs:latest
+      docker tag $(cat iid) oxeva/phpcs:latest;
     fi
   - docker push oxeva/phpcs
